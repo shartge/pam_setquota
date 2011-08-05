@@ -1,0 +1,19 @@
+PAM Set Quota module
+
+This module will set disk quota when session begins.  This allows
+users to be present in central database (such as mysql). To
+have different policies, pam_setquota works only with uids
+from startuid to enduid. If you do not have max uid, set enduid=0.
+The fs parameter should be either block device or mount point. If
+fs does not set, homedir filesystem will be used to set quota.
+
+Here are sample PAM config lines:
+
+session    required     /lib/security/pam_setquota.so bsoftlimit=19000 bhardlimit=20000 isoftlimit=3000 ihardlimit=4000 startuid=1000 enduid=2000 fs=/dev/sda1
+session    required     /lib/security/pam_setquota.so bsoftlimit=1000 bhardlimit=2000 isoftlimit=1000 ihardlimit=2000 startuid=2001 enduid=0 fs=/home
+
+Released under the GNU LGPL version 2 or later
+
+Originally written by Ruslan Savchenko <savrus@mexmat.net> April 2006
+Structure taken from pam_mkhomedir by Jason Gunthorpe <jgg@debian.org> 1999
+
