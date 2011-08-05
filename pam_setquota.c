@@ -26,8 +26,6 @@
 
 #include <sys/types.h>
 #include <linux/quota.h>
-#include <linux/dqblk_v1.h>
-#include <linux/dqblk_v2.h>
 #include <pwd.h>
 #include <syslog.h>
 #include <errno.h>
@@ -51,7 +49,7 @@ struct pam_params
 };
 
 static void
-debug(struct if_dqblk *p)
+debug(pam_handle_t *pamh, struct if_dqblk *p)
 {
 	pam_syslog(pamh, LOG_DEBUG, "bsoftlimit=%llu bhardlimit=%llu isoftlimit=%llu ihardlimit=%llu", p->dqb_bsoftlimit, p->dqb_bhardlimit, p->dqb_isoftlimit, p->dqb_ihardlimit);
 }
@@ -213,7 +211,7 @@ pam_sm_open_session (pam_handle_t *pamh, int flags, int argc,
 	}
 
 	if ( param.debug == 1 )
-		debug(&ndqblk);
+		debug(pamh, &ndqblk);
 
 	/* Parse new limits */
 	ndqblk.dqb_valid = 0;
@@ -229,7 +227,7 @@ pam_sm_open_session (pam_handle_t *pamh, int flags, int argc,
 			return PAM_PERM_DENIED;
 		}
 		if ( param.debug == 1 )
-			debug(&ndqblk);	
+			debug(pamh, &ndqblk);	
 	}			
 	return PAM_SUCCESS;	
 }
