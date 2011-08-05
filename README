@@ -17,8 +17,11 @@ Released under the GNU LGPL version 2 or later
 
 Originally written by Ruslan Savchenko <savrus@mexmat.net> April 2006
 Structure taken from pam_mkhomedir by Jason Gunthorpe <jgg@debian.org> 1999
+     - http://code.google.com/p/pam-setquota/
+
 Modified Jan 26, 2010 by Shane Tzen <shane at ict d0t usc d0t edu>
      - added overwrite option to avoid overwriting existing quotas
-Modified and adapted to new PAM versions by Sven Hartge <sven@svenhartge.de>
+     - http://pam-setquota.googlecode.com/files/setquota.patch
 
+Modified and adapted to new PAM versions by Sven Hartge <sven@svenhartge.de>
 
