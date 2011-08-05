@@ -34,7 +34,8 @@
 
 #include <security/pam_modules.h>
 #include <security/_pam_macros.h>
-
+#include <security/pam_ext.h>
+#include <security/pam_modutil.h>
 
 struct pam_params
 {
@@ -115,17 +116,12 @@ pam_sm_open_session (pam_handle_t *pamh, int flags, int argc,
 	FILE *fd;
 	char mntdevice[BUFSIZ], mntpoint[BUFSIZ];
 	const struct mntent *mnt;
-	char srvstr[50];
 	const char *service;
 
 	
 	if (pam_get_item (pamh, PAM_SERVICE, (const void **) &service) != PAM_SUCCESS)
 		service = "";
 	
-	/* Start logging */
-	snprintf (srvstr, sizeof (srvstr), "%s[%d]: (pam_setquota) ", service, getpid ());
-	openlog(srvstr,0,LOG_AUTHPRIV);
-
 	/* Parse values */
 	_pam_parse_params(argc, argv, &param);
 
@@ -134,7 +130,7 @@ pam_sm_open_session (pam_handle_t *pamh, int flags, int argc,
 	if (retval != PAM_SUCCESS || user == NULL ||
 		*(const char *)user == '\0')
 	{
-		syslog(LOG_NOTICE, "user unknown");
+		pam_syslog(pamh, LOG_NOTICE, "user unknown");
 		return PAM_USER_UNKNOWN;
 	}
 
@@ -165,7 +161,7 @@ pam_sm_open_session (pam_handle_t *pamh, int flags, int argc,
 	/* Find out what device the filesystem is hosted on */
 	if ((fd = setmntent("/etc/mtab", "r")) == NULL)
 	{
-		syslog(LOG_ERR,"Unable to open /etc/mtab");
+		pam_syslog(pamh, LOG_ERR, "Unable to open /etc/mtab");
 		return PAM_PERM_DENIED;
 	}
 	
@@ -189,14 +185,14 @@ pam_sm_open_session (pam_handle_t *pamh, int flags, int argc,
 	}
 
 	if (*mntdevice == '\0'){
-		syslog(LOG_ERR,"Filesystem not found");
+		pam_syslog(pamh, LOG_ERR, "Filesystem not found");
 		return PAM_PERM_DENIED;
 	}
 	
 	/* Get limits */
 	if (quotactl(QCMD(Q_GETQUOTA,USRQUOTA), mntdevice, pwd->pw_uid, (void*) &ndqblk) == -1)
 	{
-		sysctl(LOG_ERR,"fail to get limits for user %s : %s", pwd->pw_name, strerror(errno));
+		pam_syslog(pamh, LOG_ERR, "fail to get limits for user %s : %s", pwd->pw_name, strerror(errno));
 		return PAM_PERM_DENIED;
 	}
 
@@ -207,7 +203,7 @@ pam_sm_open_session (pam_handle_t *pamh, int flags, int argc,
 	/* Set limits */
 	if (quotactl(QCMD(Q_SETQUOTA,USRQUOTA), mntdevice, pwd->pw_uid, (void*) &ndqblk) == -1)
 	{
-		 sysctl(LOG_ERR,"fail to set limits for user %s : %s", pwd->pw_name, strerror(errno));
+		 pam_syslog(pamh, LOG_ERR, "fail to set limits for user %s : %s", pwd->pw_name, strerror(errno));
 		 return PAM_PERM_DENIED;
 	}
 	
