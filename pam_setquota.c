@@ -12,11 +12,15 @@
 
    session    required     /lib/security/pam_setquota.so bsoftlimit=19000 bhardlimit=20000 isoftlimit=3000 ihardlimit=4000 startuid=1000 enduid=2000 fs=/dev/sda1
    session    required     /lib/security/pam_setquota.so bsoftlimit=1000 bhardlimit=2000 isoftlimit=1000 ihardlimit=2000 startuid=2001 enduid=0 fs=/home
+   session    required     /lib/security/pam_setquota.so bsoftlimit=19000 bhardlimit=20000 isoftlimit=3000 ihardlimit=4000 startuid=1000 enduid=2000 fs=/dev/sda1 overwrite=1
    
    Released under the GNU LGPL version 2 or later
    Originally written by Ruslan Savchenko <savrus@mexmat.net> April 2006
    Structure taken from pam_mkhomedir by Jason Gunthorpe
      <jgg@debian.org> 1999
+
+   Modified Jan 26, 2010 by Shane Tzen <shane at ict d0t usc d0t edu>
+     - added overwrite option to avoid overwriting existing quotas
 
 */
 
@@ -42,7 +46,15 @@ struct pam_params
 	uid_t start_uid;
 	uid_t end_uid;
 	char *fs;
+	int overwrite;
+	int debug;
 };
+
+static void
+debug(struct if_dqblk *p)
+{
+	pam_syslog(pamh, LOG_DEBUG, "bsoftlimit=%llu bhardlimit=%llu isoftlimit=%llu ihardlimit=%llu", p->dqb_bsoftlimit, p->dqb_bhardlimit, p->dqb_isoftlimit, p->dqb_ihardlimit);
+}
 
 
 static void 
@@ -94,6 +106,10 @@ _pam_parse_params(int argc, const char **argv, struct pam_params *p)
 			p->end_uid = strtol (*argv + 7, NULL, 10);
 		else if (strncmp (*argv, "fs=",3) == 0)
 			p->fs = (char*) *argv + 3;
+		else if (strncmp (*argv, "overwrite=",10) == 0)
+			p->overwrite = strtol (*argv + 10, NULL, 10);
+		else if (strncmp (*argv, "debug=",6) == 0)
+			p->debug = strtol (*argv + 6, NULL, 10);
 	}
 }
 
@@ -121,7 +137,7 @@ pam_sm_open_session (pam_handle_t *pamh, int flags, int argc,
 	
 	if (pam_get_item (pamh, PAM_SERVICE, (const void **) &service) != PAM_SUCCESS)
 		service = "";
-	
+
 	/* Parse values */
 	_pam_parse_params(argc, argv, &param);
 
@@ -196,18 +212,25 @@ pam_sm_open_session (pam_handle_t *pamh, int flags, int argc,
 		return PAM_PERM_DENIED;
 	}
 
+	if ( param.debug == 1 )
+		debug(&ndqblk);
+
 	/* Parse new limits */
 	ndqblk.dqb_valid = 0;
 	_pam_parse_dqblk(argc,argv,&ndqblk);
 
-	/* Set limits */
-	if (quotactl(QCMD(Q_SETQUOTA,USRQUOTA), mntdevice, pwd->pw_uid, (void*) &ndqblk) == -1)
+	/* Only overwrite if quotas aren't already set or if overwrite is set */
+	if ( (ndqblk.dqb_bsoftlimit == 0 && ndqblk.dqb_bhardlimit == 0 && ndqblk.dqb_isoftlimit == 0 && ndqblk.dqb_ihardlimit == 0) || param.overwrite == 1 )
 	{
-		 pam_syslog(pamh, LOG_ERR, "fail to set limits for user %s : %s", pwd->pw_name, strerror(errno));
-		 return PAM_PERM_DENIED;
-	}
-	
-			
+		/* Set limits */
+		if (quotactl(QCMD(Q_SETQUOTA,USRQUOTA), mntdevice, pwd->pw_uid, (void*) &ndqblk) == -1)
+		{
+			pam_syslog(pamh, LOG_ERR, "fail to set limits for user %s : %s", pwd->pw_name, strerror(errno));
+			return PAM_PERM_DENIED;
+		}
+		if ( param.debug == 1 )
+			debug(&ndqblk);	
+	}			
 	return PAM_SUCCESS;	
 }
 
