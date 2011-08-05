@@ -5,7 +5,7 @@ pam_setquota.o: pam_setquota.c
 	gcc -fPIC -DLINUX_PAM -Dlinux -Di386 -DPAM_DYNAMIC -c pam_setquota.c
 
 install: pam_setquota.so
-	install --mode=744 pam_setquota.so /lib/security
+	install --mode=644 pam_setquota.so /lib/security
 
 clean:
 	rm -f pam_setquota.o pam_setquota.so
