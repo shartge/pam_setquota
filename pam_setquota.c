@@ -213,13 +213,13 @@ pam_sm_open_session (pam_handle_t *pamh, int flags, int argc,
 	if ( param.debug == 1 )
 		debug(pamh, &ndqblk);
 
-	/* Parse new limits */
-	ndqblk.dqb_valid = 0;
-	_pam_parse_dqblk(argc,argv,&ndqblk);
-
 	/* Only overwrite if quotas aren't already set or if overwrite is set */
 	if ( (ndqblk.dqb_bsoftlimit == 0 && ndqblk.dqb_bhardlimit == 0 && ndqblk.dqb_isoftlimit == 0 && ndqblk.dqb_ihardlimit == 0) || param.overwrite == 1 )
 	{
+		/* Parse new limits */
+		ndqblk.dqb_valid = 0;
+		_pam_parse_dqblk(argc,argv,&ndqblk);
+
 		/* Set limits */
 		if (quotactl(QCMD(Q_SETQUOTA,USRQUOTA), mntdevice, pwd->pw_uid, (void*) &ndqblk) == -1)
 		{
