@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <mntent.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #define PAM_SM_SESSION
 
@@ -36,28 +37,36 @@ static inline void debug(pam_handle_t *pamh, struct if_dqblk *p) {
              p->dqb_ihardlimit);
 }
 
-static void _pam_parse_dqblk(int argc, const char **argv, struct if_dqblk *p) {
+static bool _pam_parse_dqblk(int argc, const char **argv, struct if_dqblk *p) {
+  bool bhard = false, bsoft = false, ihard = false, isoft = false;
+
   for (; argc-- > 0; ++argv) {
     if (strncmp(*argv, "bhardlimit=", 11) == 0) {
       p->dqb_bhardlimit = strtol(*argv + 11, NULL, 10);
       p->dqb_valid |= QIF_BLIMITS;
+      bhard = true;
     } else if (strncmp(*argv, "bsoftlimit=", 11) == 0) {
       p->dqb_bsoftlimit = strtol(*argv + 11, NULL, 10);
       p->dqb_valid |= QIF_BLIMITS;
+      bsoft = true;
     } else if (strncmp(*argv, "ihardlimit=", 11) == 0) {
       p->dqb_ihardlimit = strtol(*argv + 11, NULL, 10);
       p->dqb_valid |= QIF_ILIMITS;
+      ihard = true;
     } else if (strncmp(*argv, "isoftlimit=", 11) == 0) {
       p->dqb_isoftlimit = strtol(*argv + 11, NULL, 10);
       p->dqb_valid |= QIF_ILIMITS;
+      isoft = true;
     } else if (strncmp(*argv, "btime=", 6) == 0) {
       p->dqb_btime = strtol(*argv + 6, NULL, 10);
-      p->dqb_valid |= QIF_TIMES;
+      p->dqb_valid |= QIF_BTIME;
     } else if (strncmp(*argv, "itime=", 6) == 0) {
       p->dqb_itime = strtol(*argv + 6, NULL, 10);
-      p->dqb_valid |= QIF_TIMES;
+      p->dqb_valid |= QIF_ITIME;
     }
   }
+
+  return !(bhard ^ bsoft) && !(ihard ^ isoft);
 }
 
 static void _pam_parse_params(int argc, const char **argv,
@@ -165,9 +174,13 @@ PAM_EXTERN int pam_sm_open_session(pam_handle_t *pamh, int flags, int argc,
   if ((ndqblk.dqb_bsoftlimit == 0 && ndqblk.dqb_bhardlimit == 0 &&
        ndqblk.dqb_isoftlimit == 0 && ndqblk.dqb_ihardlimit == 0) ||
       param.overwrite == 1) {
+
     /* Parse new limits */
     ndqblk.dqb_valid = 0;
-    _pam_parse_dqblk(argc, argv, &ndqblk);
+    if (!_pam_parse_dqblk(argc, argv, &ndqblk)) {
+      pam_syslog(pamh, LOG_AUTH | LOG_WARNING, "setting soft and hard limits"
+                                               "separately");
+    }
 
     /* Set limits */
     if (quotactl(QCMD(Q_SETQUOTA, USRQUOTA), mntdevice, pwd->pw_uid,
