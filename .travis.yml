@@ -4,11 +4,12 @@ dist: precise
 addons:
   apt:
     packages:
-    - build-essentials
+    - build-essential
+    - clang-format-3.4
     - linux-libc-dev
     - libpam0g-dev
 
 git:
   depth: 3
 
-script: make
+script: ./test.sh
