@@ -25,6 +25,7 @@
 */
 
 #include <sys/types.h>
+#include <sys/quota.h>
 #include <linux/quota.h>
 #include <pwd.h>
 #include <syslog.h>
