@@ -1,0 +1,14 @@
+sudo: false
+dist: precise
+
+addons:
+  apt:
+    packages:
+    - build-essentials
+    - linux-libc-dev
+    - libpam0g-dev
+
+git:
+  depth: 3
+
+script: make
