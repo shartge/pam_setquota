@@ -1,7 +1,20 @@
 sudo: false
 dist: precise
 
+env:
+  global:
+  # encrypted COVERITY_SCAN_TOKEN
+  - secure: "jAKcq+1cALbQthqYxaQaeDEp9GY6FSmIvDLSZ+eQJoA8Qx5AHftCaaBiLsmQx7MQeNgPNL5d64NXjFIT6skhngUHhMS1qXlVzUAF0gqdjKOqhbBYjHBoGEeCdwIhQIrJxQ/lvbMpXF+G+uurp3QNU70p+B6xO8cMvCy2uKLdn5vq4wZL4VEZJ4aENJ1Js1YSC3/81tm1dSIGIrdJ4Hrd9GxMXhMTCdbjOFFfGLOoo2jYQAmiOvNwi29YohwTs2ylg2hNjae7dwKMiLbm5xYXC9QIGFMgGSw87PIiPwMJDOznPyDQfmBfwvOdqMzC7QU6/JC6zmlAemyTi1n8jVzjOCgU89MJg6PG50gCznEb5q1rySsImAruv7tFrx9TTpOwbimPdUtddLQE8XSA3o89/g/lLGGBKJlAKDEcw7LR4V489jmisyB7ZTX5ASAy8xzfvrYKAjSbEKOpiNOXs3/03vXHP5FjpMVJ5KapEU23MmMiVjx+IrxVLVtA4C7Pblre7mrre31TrRb7EErqt+hraSuVdT1PRWWaBLJRs5mt+0RBz55eZmcg1J5j5lJoQQReixPy4kQ7yO1nxEmCS+QSYAvi9pprO43FA+mOy8b6ZSsgdxzv8vNQ9Ju5Is9KTiSO9VbZUdi8CCtylaLkkwzZuRNHGkcTtST4TryfYAuR9ck="
+
 addons:
+  coverity_scan:
+    project:
+      name: "hashbang/pam_setquota"
+      description: "PAM module for setting disk quotas on login"
+    notification_email: kellerfuchs@hashbang.sh
+    build_command: "make"
+    branch_pattern: coverity_scan
+
   apt:
     packages:
     - build-essential
