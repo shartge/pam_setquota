@@ -124,10 +124,10 @@ PAM_EXTERN int pam_sm_open_session(pam_handle_t *pamh, int flags, int argc,
 
   /* Remove the unnecessary '/' from the end of fs parameter */
   if (param.fs != NULL) {
-    if (strlen(param.fs) > 1) {
-      if (param.fs[strlen(param.fs) - 1] == '/')
-        param.fs[strlen(param.fs) - 1] = '\0';
-    }
+    size_t len = strlen(param.fs);
+    if (len > 1)
+      if (param.fs[len - 1] == '/')
+        param.fs[len - 1] = '\0';
   }
 
   /* Find out what device the filesystem is hosted on */
