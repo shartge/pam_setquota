@@ -145,11 +145,8 @@ PAM_EXTERN int pam_sm_open_session(pam_handle_t *pamh, int flags, int argc,
         strncpy(mntpoint, mnt->mnt_dir, sizeof(mntpoint));
         strncpy(mntdevice, mnt->mnt_fsname, sizeof(mntdevice));
       }
-    } else if ((((strncmp(param.fs, mnt->mnt_dir, strlen(mnt->mnt_dir)) == 0) &&
-                 (strlen(param.fs) == strlen(mnt->mnt_dir)))) ||
-               ((strncmp(param.fs, mnt->mnt_fsname, strlen(mnt->mnt_fsname)) ==
-                 0) &&
-                ((strlen(param.fs) == strlen(mnt->mnt_fsname))))) {
+    } else if ((strcmp(param.fs, mnt->mnt_dir) == 0) ||
+               (strcmp(param.fs, mnt->mnt_fsname) == 0)) {
       strncpy(mntdevice, mnt->mnt_fsname, sizeof(mntdevice));
     }
   }
