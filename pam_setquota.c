@@ -124,10 +124,10 @@ PAM_EXTERN int pam_sm_open_session(pam_handle_t *pamh, int flags, int argc,
 
   /* Remove the unnecessary '/' from the end of fs parameter */
   if (param.fs != NULL) {
-    if (strlen(param.fs) > 1) {
-      if (param.fs[strlen(param.fs) - 1] == '/')
-        param.fs[strlen(param.fs) - 1] = '\0';
-    }
+    size_t len = strlen(param.fs);
+    if (len > 1)
+      if (param.fs[len - 1] == '/')
+        param.fs[len - 1] = '\0';
   }
 
   /* Find out what device the filesystem is hosted on */
@@ -137,19 +137,24 @@ PAM_EXTERN int pam_sm_open_session(pam_handle_t *pamh, int flags, int argc,
   }
 
   *mntpoint = *mntdevice = '\0';
+  size_t match_size = 0;
   while ((mnt = getmntent(fd)) != NULL) {
     if (param.fs == NULL) {
-      /* If fs is not specified use filesystem with homedir as default */
-      if ((strncmp(pwd->pw_dir, mnt->mnt_dir, strlen(mnt->mnt_dir)) == 0) &&
-          (strlen(mnt->mnt_dir) > strlen(mntpoint))) {
+      size_t mnt_len = strlen(mnt->mnt_dir);
+      /* If fs is not specified use filesystem with homedir as default
+       * Checking the mnt_len-th character in pwd->pw_dir is safe because of the
+       * strncmp(2) check before (whose success implies strlen(pwd->pw_dir) >=
+       * mntlen)
+       */
+      if ((strncmp(pwd->pw_dir, mnt->mnt_dir, mnt_len) == 0) &&
+          (mnt_len > match_size) &&
+          (pwd->pw_dir[mnt_len] == '\0' || pwd->pw_dir[mnt_len] == '/')) {
         strncpy(mntpoint, mnt->mnt_dir, sizeof(mntpoint));
         strncpy(mntdevice, mnt->mnt_fsname, sizeof(mntdevice));
+        match_size = mnt_len;
       }
-    } else if ((((strncmp(param.fs, mnt->mnt_dir, strlen(mnt->mnt_dir)) == 0) &&
-                 (strlen(param.fs) == strlen(mnt->mnt_dir)))) ||
-               ((strncmp(param.fs, mnt->mnt_fsname, strlen(mnt->mnt_fsname)) ==
-                 0) &&
-                ((strlen(param.fs) == strlen(mnt->mnt_fsname))))) {
+    } else if ((strcmp(param.fs, mnt->mnt_dir) == 0) ||
+               (strcmp(param.fs, mnt->mnt_fsname) == 0)) {
       strncpy(mntdevice, mnt->mnt_fsname, sizeof(mntdevice));
     }
   }
