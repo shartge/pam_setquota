@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/shartge/pam_setquota.svg?branch=master)](https://travis-ci.org/shartge/pam_setquota) [![Coverity Scan Build Status](https://scan.coverity.com/projects/8790/badge.svg)](https://scan.coverity.com/projects/shartge-pam_setquota)
+
 PAM `setquota` module
 =====================
 
