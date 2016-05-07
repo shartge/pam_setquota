@@ -1,17 +1,18 @@
 sudo: false
 dist: precise
 
+
 env:
   global:
   # encrypted COVERITY_SCAN_TOKEN
-  - secure: "jAKcq+1cALbQthqYxaQaeDEp9GY6FSmIvDLSZ+eQJoA8Qx5AHftCaaBiLsmQx7MQeNgPNL5d64NXjFIT6skhngUHhMS1qXlVzUAF0gqdjKOqhbBYjHBoGEeCdwIhQIrJxQ/lvbMpXF+G+uurp3QNU70p+B6xO8cMvCy2uKLdn5vq4wZL4VEZJ4aENJ1Js1YSC3/81tm1dSIGIrdJ4Hrd9GxMXhMTCdbjOFFfGLOoo2jYQAmiOvNwi29YohwTs2ylg2hNjae7dwKMiLbm5xYXC9QIGFMgGSw87PIiPwMJDOznPyDQfmBfwvOdqMzC7QU6/JC6zmlAemyTi1n8jVzjOCgU89MJg6PG50gCznEb5q1rySsImAruv7tFrx9TTpOwbimPdUtddLQE8XSA3o89/g/lLGGBKJlAKDEcw7LR4V489jmisyB7ZTX5ASAy8xzfvrYKAjSbEKOpiNOXs3/03vXHP5FjpMVJ5KapEU23MmMiVjx+IrxVLVtA4C7Pblre7mrre31TrRb7EErqt+hraSuVdT1PRWWaBLJRs5mt+0RBz55eZmcg1J5j5lJoQQReixPy4kQ7yO1nxEmCS+QSYAvi9pprO43FA+mOy8b6ZSsgdxzv8vNQ9Ju5Is9KTiSO9VbZUdi8CCtylaLkkwzZuRNHGkcTtST4TryfYAuR9ck="
+  - secure: "HaAhA0LDTyoLYw3JEdVUCrMJW9jWXqdSkoNrc5yeT1qVhC2s+qXjtAXmns4pkxm8NjzQsdlr1qG7QS6kKg/Ea0JUBQx4EbEkFXu2X65+ed2qMZjj57aHIF54BuVRyw/vE5Ogh5W6rK0K4NyFLD+4EdUXcJr+nLUV4wB283roO6sQMqH2RJRgpYlo91sUAigQefSJoRtELqRWil5JtQnN0MLMGiaCTJIHdRWMvBYkw8+xj1QCLw+JJ6f0D012svYiVwWsDfzR8aSpzIhjpFDPEly7ABNPipLw1o57Gi0NwKRlsN2//hNQHMt+C3SMse7sP3PVqlSJrE/n/ofRf3U95cby5XMVgwxmmmbwbCSO8wlEgu1ulYoE2gbCnDBDSz56UeLeTaP9x9mtRyR89B5C2oTvz8qiTII05GDe2qCWsIWqarwNg00XaEfjIbd+Rom9gSRjf0tC72vfleJb0U1TLk2DJxPLPj1yifkliaD1MOF1ekC/a3E/MuXQsB7ZPwVhIe1B7+tw3a9Vsfg6m3PALV/DW+s14KH4e8AlvILIYhr2N44D0zNVh+EPguwCtGynqORF7lgl/9AcJtt53zYN9PAXGnoM3K6dHwzLThE3WcTfM3agWNG33bM4ExHy8FzuGH+Z9IygXO/xey+1iWsil5BTG6CekVceguqPBGJ73Hg="
 
 addons:
   coverity_scan:
     project:
-      name: "hashbang/pam_setquota"
+      name: "shartge/pam_setquota"
       description: "PAM module for setting disk quotas on login"
-    notification_email: kellerfuchs@hashbang.sh
+    notification_email: sven@svenhartge.de
     build_command: "make"
     branch_pattern: coverity_scan
 
