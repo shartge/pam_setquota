@@ -3,24 +3,26 @@
 PAM `setquota` module
 =====================
 
-This module sets disk quota when a session begins.
+This module sets (or modifies) a disk quota when a session begins.
 
 This makes quotas usable with central user databases, such as MySql or LDAP.
 
 Usage
 -----
-A single invocation of `pam_setquota` applies a specific policy to a uid range.
-Applying different policies to specific uid ranges is done by invoking
+A single invocation of `pam_setquota` applies a specific policy to a UID range.
+Applying different policies to specific UID ranges is done by invoking
 `pam_setquota` more than once.
 
 Some parameters can be passed to `pam_setquota.so` through the PAM config:
 - `fs` is the device file or mountpoint the policy applies to.  
-  Defaults to the filesystem containing the user's home directory.
-- `startuid` and `enduid` descibe the uid range the policy is applied to.  
-  Setting `enduid=0` results in an open-ended uid range (i.e. all uids greater
+  Defaults to the filesystem containing the users home directory.
+- `startuid` and `enduid` describe the UID range the policy is applied to.  
+  Setting `enduid=0` results in an open-ended UID range (i.e. all uids greater
   than `startuid` are included).  
   Defaults to `startuid=1000` and `enduid=0`.
 - `overwrite` lets you override an existing quota.
+  Note: Enabling this will remove the ability for the admin to manually configure
+	a different quota for users for a filesystem with `edquota(8)`.
 - `bsoftlimit`, `bhardlimit`, `isoftlimit` and `ihardlimit` are as defined by
   `quotactl(2)`:
   - `b` expresses a number of blocks (size limit), whereas
