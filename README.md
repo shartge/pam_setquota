@@ -20,9 +20,9 @@ Some parameters can be passed to `pam_setquota.so` through the PAM config:
   Setting `enduid=0` results in an open-ended UID range (i.e. all uids greater
   than `startuid` are included).  
   Defaults to `startuid=1000` and `enduid=0`.
-- `overwrite` lets you override an existing quota.
+- `overwrite` lets you override an existing quota.  
   Note: Enabling this will remove the ability for the admin to manually configure
-	a different quota for users for a filesystem with `edquota(8)`.
+	different quotas for users for a filesystem with `edquota(8)`.
 - `bsoftlimit`, `bhardlimit`, `isoftlimit` and `ihardlimit` are as defined by
   `quotactl(2)`:
   - `b` expresses a number of blocks (size limit), whereas
