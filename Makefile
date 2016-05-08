@@ -3,7 +3,7 @@ INSTALL ?= install
 CFLAGS ?= -O2 -g -Wall -Wformat-security -Wextra -fstack-protector-all
 
 CFLAGS += -fPIC -fvisibility=hidden -DLINUX_PAM -DPAM_DYNAMIC
-LDFLAGS += -Wl,-x -z relro -z now -shared
+LDFLAGS += -Wl,-x -Wl,-z,relro -Wl,-z,now -shared
 
 TITLE = pam_setquota
 LIBSHARED = $(TITLE).so
