@@ -20,7 +20,7 @@ $(LIBSHARED): $(LIBOBJ)
 	$(CC) $(LDFLAGS) $(LIBOBJ) $(LDLIBS) -o $@
 
 pam_setquota.o: pam_setquota.c
-	$(CC) -c $(CPPFLAGS) $(CPPFLAGS_MD5_BROKEN) $(CFLAGS) $< -o $@
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $< -o $@
 
 install: $(LIBSHARED)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(PAM_LIB_DIR)
