@@ -1,6 +1,11 @@
 sudo: false
-dist: precise
+dist: 
+  - precise
+  - trusty
 
+compiler:
+  - clang
+  - gcc
 
 env:
   global:
