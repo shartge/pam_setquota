@@ -17,14 +17,14 @@ RM ?= rm
 all: $(LIBSHARED)
 
 $(LIBSHARED): $(LIBOBJ)
-        $(CC) $(LDFLAGS) $(LIBOBJ) $(LDLIBS) -o $@
+	$(CC) $(LDFLAGS) $(LIBOBJ) $(LDLIBS) -o $@
 
 pam_setquota.o: pam_setquota.c
 	$(CC) -c $(CPPFLAGS) $(CPPFLAGS_MD5_BROKEN) $(CFLAGS) $< -o $@
 
 install: $(LIBSHARED)
-        $(INSTALL) -m 0755 -d $(DESTDIR)$(PAM_LIB_DIR)
-        $(INSTALL) -m 0644 $(LIBSHARED) $(DESTDIR)$(PAM_LIB_DIR)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(PAM_LIB_DIR)
+	$(INSTALL) -m 0644 $(LIBSHARED) $(DESTDIR)$(PAM_LIB_DIR)
 
 clean:
 	$(RM) *.o *.so
