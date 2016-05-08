@@ -1,7 +1,7 @@
-sudo: required
-dist: 
-  - precise
-  - trusty
+sudo: false
+dist: precise
+
+language: c
 
 compiler:
   - clang
